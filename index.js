@@ -72,11 +72,33 @@ The data fetched from url should be displayed in index.html.
 */
 
 const getAllCountries = () => {
-  /* provide your code here */
+  const allCountries = [];
+  fetch("https://restcountries.com/v3.1/all")
+    .then((res) => res.json())
+    .then((data) => {
+      data.map((res) => {
+        allCountries.push(res.name.common);
+      });
+      allCountries.sort();
+      document.getElementById("country").innerHTML = allCountries;
+    });
 };
 
 const getSingleCountry = () => {
-  /* provide your code here */
+  var country = document.getElementById("getSingleCountry").value;
+  const url = `https://restcountries.com/v3.1/name/${country}`;
+
+  const result = async (url) => {
+    const data = await fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        data.map((res) => {
+          document.getElementById("singleCountry").innerHTML = res.name.common;
+          console.log(res.name.common);
+        });
+      });
+  };
+  result(url);
 };
 
 getAllCountries();
@@ -90,6 +112,12 @@ to array, and so on.
 
 const generateNewFolderName = (existingFolders) => {
   /*  provide your code here */
+  if (existingFolders.length == 0) {
+    existingFolders.push("New Folder");
+  } else {
+    const i = existingFolders.length;
+    existingFolders.push("New Folder (" + i + ")");
+  }
 };
 
 let folder = [];
@@ -114,12 +142,45 @@ cost 14, profit 0.3 , tax 24% => expected price is 30.43
 */
 class Book {
   _title;
-  constructor(title, cost, profit) {}
+  constructor(title, cost, profit) {
+    if (typeof title !== "string") {
+      throw "Title must be a string!";
+    } else {
+      this.title = title;
+    }
+
+    if (typeof cost !== "number" && cost < 0) {
+      throw "Cost must be a number!";
+    } else {
+      this.cost = cost;
+    }
+    if (typeof profit !== "number" && profit < 0 && profit > 0.5) {
+      throw "profit must be a string!";
+    } else {
+      this.profit = profit;
+    }
+  }
+  calc() {
+    return this.cost / (1 - this.profit);
+  }
 }
 
-class TaxableBook {
-  /* provide your code here */
+class TaxableBook extends Book {
+  constructor(title, cost, profit, taxRate) {
+    super(title, cost, profit);
+    if (typeof taxRate !== "number" && taxRate < 0) {
+      throw "taxRate must be a number!";
+    } else {
+      this.taxRate = taxRate;
+    }
+  }
+  pricewithTaxrate() {
+    const pricewithTaxrate = this.cost / (1 - this.profit - this.taxRate / 100);
+    return pricewithTaxrate;
+  }
 }
 
 const book1 = new Book("The Power of Habits", 14, 0.3);
+console.log(book1.calc());
 const book2 = new TaxableBook("The Power of Habits", 14, 0.3, 24);
+console.log(book2.pricewithTaxrate());
